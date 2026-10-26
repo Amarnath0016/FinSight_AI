@@ -1,3 +1,12 @@
+import TransactionFilters from "../components/dashboard/TransactionFilters";
+import CategoryExpenseChart from "../components/dashboard/CategoryExpenseChart";
+import {
+  filterTransactions,
+  calculateFinancialSummary,
+  getCategoryExpenseBreakdown,
+  getUniqueCategories,
+} from "../utils/financialAnalytics";
+
 
 import { useEffect, useState } from "react";
 
@@ -33,6 +42,20 @@ function Dashboard() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(emptyForm);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [filters, setFilters] = useState({
+  search: "",
+  type: "all",
+  category: "all",
+  startDate: "",
+  endDate: "",
+});
+
+  const dateError =
+    filters.startDate &&
+    filters.endDate &&
+    filters.startDate > filters.endDate
+      ? "Start date must be on or before the end date."
+      : "";
 
   useEffect(() => {
     checkBackendHealth()
@@ -50,7 +73,6 @@ function Dashboard() {
   }, []);
 
   async function loadTransactions() {
-    setTransactionsLoading(true);
     setTransactionsError("");
 
     try {
@@ -65,21 +87,39 @@ function Dashboard() {
     }
   }
 
+  function handleFilterChange(name, value) {
+    setFilters((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  }
+
+  function clearFilters() {
+    setFilters({
+      search: "",
+      type: "all",
+      category: "all",
+      startDate: "",
+      endDate: "",
+    });
+  }
+
+  const filteredTransactions = filterTransactions(transactions, filters);
+
+  const summary = calculateFinancialSummary(filteredTransactions);
+
+  const categoryBreakdown =
+    getCategoryExpenseBreakdown(filteredTransactions);
+
+  const categories = getUniqueCategories(transactions);
+
   useEffect(() => {
+  Promise.resolve().then(() => {
     loadTransactions();
-  }, []);
+  });
+}, []);
 
-  const totalIncome = transactions
-    .filter((item) => item.type === "income")
-    .reduce((sum, item) => sum + Number(item.amount), 0);
-
-  const totalExpenses = transactions
-    .filter((item) => item.type === "expense")
-    .reduce((sum, item) => sum + Number(item.amount), 0);
-
-  const netSavings = totalIncome - totalExpenses;
-  const savingsRate =
-    totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
+  const { totalIncome, totalExpenses, netSavings, savingsRate } = summary;
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-IN", {
@@ -212,6 +252,20 @@ function Dashboard() {
             {backendError && <p role="alert">{backendError}</p>}
           </div>
 
+          <TransactionFilters
+  search={filters.search}
+  type={filters.type}
+  category={filters.category}
+  startDate={filters.startDate}
+  endDate={filters.endDate}
+  categories={categories}
+  onChange={handleFilterChange}
+  onClear={clearFilters}
+  dateError={dateError}
+/>
+
+
+
           <div className="stats-grid">
             {dashboardStats.map((stat) => (
               <StatCard key={stat.label} {...stat} />
@@ -228,13 +282,18 @@ function Dashboard() {
               </div>
             </div>
 
-            <ExpenseChart transactions={transactions} />
+            <ExpenseChart transactions={filteredTransactions} />
           </section>
+
+          <CategoryExpenseChart data={categoryBreakdown} />
 
           <AddTransactionForm onTransactionAdded={loadTransactions} />
 
           <section className="transactions-section">
             <h2>Recent Transactions</h2>
+            <p className="muted">
+              Showing {filteredTransactions.length} of {transactions.length} transactions
+            </p>
 
             {transactionsLoading && <p>Loading transactions...</p>}
 
@@ -246,15 +305,19 @@ function Dashboard() {
 
             {!transactionsLoading &&
               !transactionsError &&
-              transactions.length === 0 && (
-                <p>No transactions found. Add your first transaction above.</p>
+              filteredTransactions.length === 0 && (
+                <p>
+                  {transactions.length === 0
+                    ? "No transactions yet. Add your first transaction above."
+                    : "No transactions match your current filters. Try changing or clearing them."}
+                </p>
               )}
 
             {!transactionsLoading &&
               !transactionsError &&
-              transactions.length > 0 && (
+              filteredTransactions.length > 0 && (
                 <div className="transactions-list">
-                  {transactions.map((transaction) => (
+                  {filteredTransactions.map((transaction) => (
                     <div className="transaction-item" key={transaction._id}>
                       {editingId === transaction._id ? (
                         <form onSubmit={saveEdit} className="edit-transaction-form">
