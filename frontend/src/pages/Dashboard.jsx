@@ -1,3 +1,6 @@
+import FinancialHealthCard from "../components/dashboard/FinancialHealthCard";
+import { calculateFinancialHealth } from "../utils/financialHealth.mjs";
+
 import TransactionFilters from "../components/dashboard/TransactionFilters";
 import CategoryExpenseChart from "../components/dashboard/CategoryExpenseChart";
 import {
@@ -112,6 +115,8 @@ function Dashboard() {
     getCategoryExpenseBreakdown(filteredTransactions);
 
   const categories = getUniqueCategories(transactions);
+
+  const financialHealth = calculateFinancialHealth(filteredTransactions);
 
   useEffect(() => {
   Promise.resolve().then(() => {
@@ -271,6 +276,8 @@ function Dashboard() {
               <StatCard key={stat.label} {...stat} />
             ))}
           </div>
+
+          <FinancialHealthCard result={financialHealth} />
 
           <section className="panel chart-panel">
             <div className="panel-heading">
