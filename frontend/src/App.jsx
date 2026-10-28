@@ -3,6 +3,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/Upload";
+import ClusterInsights from "./pages/ClusterInsights";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -18,6 +19,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clusters"
+            element={
+              <ProtectedRoute>
+                <ClusterInsights />
               </ProtectedRoute>
             }
           />

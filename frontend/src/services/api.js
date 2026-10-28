@@ -220,3 +220,24 @@ export async function commitCsvUpload(transactions) {
 
   return result;
 }
+
+
+// ----------------- ML Analytics API -----------------
+
+export async function getUserSegmentation() {
+  const response = await fetch(`${API_BASE_URL}/api/analytics/segmentation`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ML segmentation: ${response.status}`);
+  }
+
+  return response.json();
+}

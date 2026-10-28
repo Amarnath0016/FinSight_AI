@@ -1,0 +1,45 @@
+{
+  "model_version": "kmeans-v1.0",
+  "n_clusters": 3,
+  "silhouette_score": 0.36141571762787533,
+  "cluster_labels": {
+    "0": {
+      "name": "Disciplined Saver",
+      "description": "Consistent high surplus, strong savings allocation, and disciplined discretionary spending.",
+      "recommendation": "Great financial resilience! Consider exploring tax-advantaged investments, emergency liquid reserves, and medium-term growth assets."
+    },
+    "2": {
+      "name": "Balanced Spender",
+      "description": "Stable financial rhythm with moderate savings and managed daily living expenses.",
+      "recommendation": "Healthy baseline. Look for opportunities to trim recurring subscriptions and automate a 5% increase to your monthly savings."
+    },
+    "1": {
+      "name": "High-Outflow Spender",
+      "description": "Expenses consume nearly all (or more than) total income, leaving minimal reserve for unexpected events.",
+      "recommendation": "High priority: conduct a category audit to identify non-essential discretionary costs and build a \u20b910,000 baseline emergency buffer."
+    }
+  },
+  "centroids": {
+    "0": {
+      "income": 75160.06280819868,
+      "expense": 39973.57243783098,
+      "savings_rate": 46.82597219470914,
+      "expense_ratio": 53.17402780529086,
+      "disc_ratio": 0.17427724831995953
+    },
+    "1": {
+      "income": 41762.389782760256,
+      "expense": 43766.686520713694,
+      "savings_rate": -4.6701654994445825,
+      "expense_ratio": 104.67016549944458,
+      "disc_ratio": 0.4903762714310965
+    },
+    "2": {
+      "income": 55464.681841713216,
+      "expense": 44903.75993840679,
+      "savings_rate": 18.891724402304483,
+      "expense_ratio": 81.10827559769552,
+      "disc_ratio": 0.3234371697107019
+    }
+  }
+}
