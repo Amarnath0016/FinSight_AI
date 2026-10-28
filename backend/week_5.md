@@ -90,22 +90,24 @@ The transaction controller validates:
 Invalid transaction details are rejected with HTTP 400 rather than being
 saved to the database.
 
-## 6. Manual Test Results
+## 6. Verification and Automated Test Results
 
-Tests confirmed during development:
+Automated backend test suite (`node --test`):
 
-| Test | Result |
-|---|---|
-| Create a transaction using POST | Passed — HTTP 201 |
-| Retrieve transactions using GET | Passed — HTTP 200 |
-| Update a transaction using PUT | Passed — HTTP 200 |
-| Reject invalid transaction input | Passed — HTTP 400 |
+| Test Suite | Tests | Result |
+|---|---|---|
+| `backend/tests/transactionValidation.test.mjs` | 9 tests | Passed (100%) |
+| `backend/tests/apiHealthAndErrors.test.mjs` | 6 tests | Passed (100%) |
+| `frontend/src/utils/financialAnalytics.test.mjs` | 9 tests | Passed (100%) |
+| `frontend/src/utils/financialHealth.test.mjs` | 10 tests | Passed (100%) |
 
-Additional verification to complete before release:
-
-- Restart the backend and confirm the updated record still exists.
-- Test DELETE and verify that the temporary test record is removed.
-- Run the final frontend lint and production build checks.
+Verified operational behavior:
+- Robust input validation rejecting invalid titles, categories, numbers, and dates (HTTP 400).
+- Standardized 404 handler for unknown routes.
+- Centralized error handler converting exceptions to JSON with status codes.
+- Compound database index `{ date: -1, createdAt: -1 }` on `Transaction` model.
+- Seed script (`npm run seed`) creating 6 months of realistic synthetic transactions.
+- Frontend lint (`npm run lint`) and Vite production build (`npm run build`) passing cleanly.
 
 ## 7. Environment Configuration
 

@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const transactionSchema = new mongoose.Schema(
@@ -7,11 +6,13 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 150,
     },
     amount: {
       type: Number,
       required: true,
       min: 0.01,
+      max: 1_000_000_000_000,
     },
     type: {
       type: String,
@@ -22,6 +23,7 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 100,
     },
     date: {
       type: String,
@@ -33,5 +35,8 @@ const transactionSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Compound index for chronological querying and sorting
+transactionSchema.index({ date: -1, createdAt: -1 });
 
 module.exports = mongoose.model("Transaction", transactionSchema);

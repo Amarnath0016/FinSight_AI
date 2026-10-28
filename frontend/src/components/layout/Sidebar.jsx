@@ -38,7 +38,7 @@ function Sidebar() {
         <div className="privacy-icon">✓</div>
         <strong>Privacy first</strong>
         <p>Your financial data should remain private and secure.</p>
-        <span className="version">FINSIGHT AI · WEEK 2</span>
+        <span className="version">FINSIGHT AI · WEEK 5</span>
       </div>
     </aside>
   );

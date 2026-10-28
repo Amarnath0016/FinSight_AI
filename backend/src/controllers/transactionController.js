@@ -1,6 +1,7 @@
-
 const mongoose = require("mongoose");
 const Transaction = require("../models/Transaction");
+const ApiError = require("../utils/ApiError");
+const asyncHandler = require("../utils/asyncHandler");
 
 function validateTransaction(body = {}) {
   const { title, amount, type, category, date } = body;
@@ -40,140 +41,88 @@ function buildTransactionData(body) {
 }
 
 // GET /api/transactions
-async function getTransactions(req, res) {
-  try {
-    const transactions = await Transaction.find().sort({
-      date: -1,
-      createdAt: -1,
-    });
+const getTransactions = asyncHandler(async (req, res) => {
+  const transactions = await Transaction.find().sort({
+    date: -1,
+    createdAt: -1,
+  });
 
-    return res.status(200).json({
-      success: true,
-      count: transactions.length,
-      data: transactions,
-    });
-  } catch (error) {
-    console.error("Fetch transactions failed:", error.message);
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch transactions",
-    });
-  }
-}
+  return res.status(200).json({
+    success: true,
+    count: transactions.length,
+    data: transactions,
+  });
+});
 
 // POST /api/transactions
-async function addTransaction(req, res) {
-  try {
-    if (!validateTransaction(req.body)) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide valid transaction details",
-      });
-    }
-
-    const transaction = await Transaction.create(
-      buildTransactionData(req.body)
-    );
-
-    return res.status(201).json({
-      success: true,
-      data: transaction,
-    });
-  } catch (error) {
-    console.error("Create transaction failed:", error.message);
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to create transaction",
-    });
+const addTransaction = asyncHandler(async (req, res) => {
+  if (!validateTransaction(req.body)) {
+    throw ApiError.badRequest("Please provide valid transaction details");
   }
-}
+
+  const transaction = await Transaction.create(
+    buildTransactionData(req.body)
+  );
+
+  return res.status(201).json({
+    success: true,
+    data: transaction,
+  });
+});
 
 // PUT /api/transactions/:id
-async function updateTransaction(req, res) {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid transaction ID",
-      });
-    }
-
-    if (!validateTransaction(req.body)) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide valid transaction details",
-      });
-    }
-
-    const transaction = await Transaction.findByIdAndUpdate(
-      req.params.id,
-      buildTransactionData(req.body),
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-
-    if (!transaction) {
-      return res.status(404).json({
-        success: false,
-        message: "Transaction not found",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: transaction,
-    });
-  } catch (error) {
-    console.error("Update transaction failed:", error.message);
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to update transaction",
-    });
+const updateTransaction = asyncHandler(async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    throw ApiError.badRequest("Invalid transaction ID");
   }
-}
+
+  if (!validateTransaction(req.body)) {
+    throw ApiError.badRequest("Please provide valid transaction details");
+  }
+
+  const transaction = await Transaction.findByIdAndUpdate(
+    req.params.id,
+    buildTransactionData(req.body),
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!transaction) {
+    throw ApiError.notFound("Transaction not found");
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: transaction,
+  });
+});
 
 // DELETE /api/transactions/:id
-async function deleteTransaction(req, res) {
-  try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid transaction ID",
-      });
-    }
-
-    const transaction = await Transaction.findByIdAndDelete(
-      req.params.id
-    );
-
-    if (!transaction) {
-      return res.status(404).json({
-        success: false,
-        message: "Transaction not found",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Transaction deleted successfully",
-      data: transaction,
-    });
-  } catch (error) {
-    console.error("Delete transaction failed:", error.message);
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to delete transaction",
-    });
+const deleteTransaction = asyncHandler(async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    throw ApiError.badRequest("Invalid transaction ID");
   }
-}
+
+  const transaction = await Transaction.findByIdAndDelete(
+    req.params.id
+  );
+
+  if (!transaction) {
+    throw ApiError.notFound("Transaction not found");
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Transaction deleted successfully",
+    data: transaction,
+  });
+});
 
 module.exports = {
+  validateTransaction,
+  buildTransactionData,
   getTransactions,
   addTransaction,
   updateTransaction,

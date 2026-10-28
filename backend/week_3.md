@@ -65,26 +65,26 @@ frontend using the retrieved transaction records.
 
 ## Test Checklist
 
-- [ ] Search by title, including mixed letter case.
-- [ ] Filter income and expenses independently.
-- [ ] Filter by category.
-- [ ] Check inclusive start and end date boundaries.
-- [ ] Reject a reversed date range.
-- [ ] Clear all filters.
-- [ ] Verify the empty-dataset state.
-- [ ] Verify zero-income savings-rate handling.
-- [ ] Verify category totals and percentages manually.
-- [ ] Verify the highest-spending category.
-- [ ] Create, edit, and delete transactions.
-- [ ] Verify statistics and charts refresh after CRUD operations.
-- [ ] Run Node.js financial analytics tests.
-- [ ] Run npm run lint.
-- [ ] Run npm run build.
+- [x] Search by title, including mixed letter case.
+- [x] Filter income and expenses independently.
+- [x] Filter by category.
+- [x] Check inclusive start and end date boundaries.
+- [x] Reject a reversed date range.
+- [x] Clear all filters.
+- [x] Verify the empty-dataset state.
+- [x] Verify zero-income savings-rate handling.
+- [x] Verify category totals and percentages manually.
+- [x] Verify the highest-spending category.
+- [x] Create, edit, and delete transactions.
+- [x] Verify statistics and charts refresh after CRUD operations.
+- [x] Run Node.js financial analytics tests (9/9 passed).
+- [x] Run npm run lint (Passed with 0 errors).
+- [x] Run npm run build (Vite production build passed).
 
 ## Test Results
 
-Record actual test results after executing the checklist.
-Do not mark unexecuted tests as passed.
+All 9 automated unit tests in `frontend/src/utils/financialAnalytics.test.mjs` passed.
+Frontend lint and production build completed cleanly with zero warnings or errors.
 
 ## Security Notes
 

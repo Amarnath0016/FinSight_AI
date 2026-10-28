@@ -19,6 +19,14 @@ function ExpenseChart({ transactions = [] }) {
     .filter((item) => item.type === "expense")
     .reduce((sum, item) => sum + Number(item.amount), 0);
 
+  if (transactions.length === 0) {
+    return (
+      <div style={{ padding: "48px 16px", textAlign: "center", color: "#94a3b8" }}>
+        <p>No transaction records available for this selection.</p>
+      </div>
+    );
+  }
+
   const data = [
     {
       name: "All recorded transactions",
