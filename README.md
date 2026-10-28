@@ -6,10 +6,10 @@ A full-stack personal finance platform built with the MERN stack (MongoDB, Expre
 
 ## Current Architecture & Milestones (Weeks 1–5 Verified)
 
-- **Frontend:** React (v19) + Vite + Recharts + Pure CSS / Modern UI styling
-- **Backend:** Node.js + Express + Mongoose + centralized error handling + custom `ApiError` + `asyncHandler`
-- **Database:** MongoDB Atlas / Local MongoDB with compound indexes on `{ date: -1, createdAt: -1 }`
-- **Testing:** Native Node.js test runner (`node --test`), 34 automated unit & integration tests across frontend and backend.
+- **Frontend:** React (v19) + Vite + Recharts + React Router + Context API Authentication
+- **Backend:** Node.js + Express + Mongoose + JWT Authentication + bcryptjs + centralized error handling
+- **Database:** MongoDB Atlas / Local MongoDB with compound indexes on `{ userId: 1, date: -1, createdAt: -1 }`
+- **Testing:** Native Node.js test runner (`node --test`), 42 automated unit & integration tests across frontend and backend.
 
 ---
 
@@ -116,12 +116,12 @@ FinSight_AI/
 
 ## Running Automated Tests & Quality Checks
 
-### Run All Backend Tests (15 tests)
+### Run All Backend Tests (23 tests)
 ```bash
 cd backend
 npm test
 ```
-Tests input validation, edge cases, 404 responses, and centralized error handling.
+Tests authentication (registration, login, JWT validation, password hashing), user data isolation, input validation, 404 responses, and centralized error handling.
 
 ### Run All Frontend Tests (19 tests)
 ```bash
@@ -140,16 +140,20 @@ npm run build
 
 ---
 
-## Verified Features (Weeks 1–5)
+## Verified Features (Weeks 1–5 + Priority A: Authentication)
 
+- [x] **User Authentication & Session Management:** User registration, login, and JWT stateless tokens with `bcryptjs` password hashing.
+- [x] **Strict Data Ownership & User Isolation:** All transactions are scoped to `userId` from the verified JWT. Insecure Direct Object References (IDOR) are strictly blocked on GET, POST, PUT, and DELETE.
+- [x] **Protected React Routing:** `ProtectedRoute` component guarding the dashboard, redirecting unauthenticated traffic to `/login`.
+- [x] **Demo Login Shortcut:** Pre-fills test credentials (`demo@finsight.ai` / `Password123!`) for fast local evaluations.
 - [x] **Express REST API & Health Monitoring:** `/api/health` reports uptime and real-time MongoDB connection status.
 - [x] **Transaction CRUD Operations:** Create, Read, Update, Delete transactions with strict validation.
-- [x] **Database Indexing:** Compound index on `{ date: -1, createdAt: -1 }` for optimal query speed.
+- [x] **Database Indexing:** Compound index on `{ userId: 1, date: -1, createdAt: -1 }` for optimal query speed.
 - [x] **Centralized Error Handling:** Standardized JSON error envelopes and custom `ApiError`.
 - [x] **Financial Analytics Engine:** Real-time net savings, savings rate, and category breakdowns.
 - [x] **Search & Multi-criteria Filtering:** Title search, income/expense toggle, category dropdown, and inclusive date boundary filtering.
 - [x] **Explainable Financial Health Score:** 0–100 heuristic score with factor breakdown, category insights, and educational disclaimers.
-- [x] **Synthetic Database Seeder:** Generates 6 months of realistic income and expense transactions.
+- [x] **Synthetic Database Seeder:** Generates a demo user and 6 months of realistic user-scoped transactions.
 
 ---
 

@@ -40,9 +40,11 @@ function buildTransactionData(body) {
   };
 }
 
-// GET /api/transactions
+// GET /api/transactions (User-scoped)
 const getTransactions = asyncHandler(async (req, res) => {
-  const transactions = await Transaction.find().sort({
+  const userId = req.user.id;
+
+  const transactions = await Transaction.find({ userId }).sort({
     date: -1,
     createdAt: -1,
   });
@@ -54,15 +56,18 @@ const getTransactions = asyncHandler(async (req, res) => {
   });
 });
 
-// POST /api/transactions
+// POST /api/transactions (Associated with authenticated user)
 const addTransaction = asyncHandler(async (req, res) => {
   if (!validateTransaction(req.body)) {
     throw ApiError.badRequest("Please provide valid transaction details");
   }
 
-  const transaction = await Transaction.create(
-    buildTransactionData(req.body)
-  );
+  const transactionData = {
+    ...buildTransactionData(req.body),
+    userId: req.user.id,
+  };
+
+  const transaction = await Transaction.create(transactionData);
 
   return res.status(201).json({
     success: true,
@@ -70,7 +75,7 @@ const addTransaction = asyncHandler(async (req, res) => {
   });
 });
 
-// PUT /api/transactions/:id
+// PUT /api/transactions/:id (Owner-only update, IDOR protected)
 const updateTransaction = asyncHandler(async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     throw ApiError.badRequest("Invalid transaction ID");
@@ -80,8 +85,8 @@ const updateTransaction = asyncHandler(async (req, res) => {
     throw ApiError.badRequest("Please provide valid transaction details");
   }
 
-  const transaction = await Transaction.findByIdAndUpdate(
-    req.params.id,
+  const transaction = await Transaction.findOneAndUpdate(
+    { _id: req.params.id, userId: req.user.id },
     buildTransactionData(req.body),
     {
       new: true,
@@ -99,15 +104,16 @@ const updateTransaction = asyncHandler(async (req, res) => {
   });
 });
 
-// DELETE /api/transactions/:id
+// DELETE /api/transactions/:id (Owner-only delete, IDOR protected)
 const deleteTransaction = asyncHandler(async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     throw ApiError.badRequest("Invalid transaction ID");
   }
 
-  const transaction = await Transaction.findByIdAndDelete(
-    req.params.id
-  );
+  const transaction = await Transaction.findOneAndDelete({
+    _id: req.params.id,
+    userId: req.user.id,
+  });
 
   if (!transaction) {
     throw ApiError.notFound("Transaction not found");

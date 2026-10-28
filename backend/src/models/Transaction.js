@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const transactionSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     title: {
       type: String,
       required: true,
@@ -36,7 +42,7 @@ const transactionSchema = new mongoose.Schema(
   }
 );
 
-// Compound index for chronological querying and sorting
-transactionSchema.index({ date: -1, createdAt: -1 });
+// Compound index for user-specific chronological querying and sorting
+transactionSchema.index({ userId: 1, date: -1, createdAt: -1 });
 
 module.exports = mongoose.model("Transaction", transactionSchema);

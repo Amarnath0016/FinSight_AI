@@ -1,6 +1,99 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5001";
 
+const TOKEN_KEY = "finsight_auth_token";
+
+export function getStoredToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setStoredToken(token) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+}
+
+export function clearStoredToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem("finsight_auth_user");
+}
+
+function getAuthHeaders() {
+  const token = getStoredToken();
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
+// ----------------- Auth API -----------------
+
+export async function loginUser(credentials) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Login failed with status ${response.status}`);
+  }
+
+  setStoredToken(result.token);
+  localStorage.setItem("finsight_auth_user", JSON.stringify(result.user));
+
+  return result;
+}
+
+export async function registerUser(userData) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Registration failed with status ${response.status}`);
+  }
+
+  setStoredToken(result.token);
+  localStorage.setItem("finsight_auth_user", JSON.stringify(result.user));
+
+  return result;
+}
+
+export async function getMe() {
+  const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to fetch profile");
+  }
+
+  return result.user;
+}
+
+// ----------------- Health & Transaction API -----------------
+
 export async function checkBackendHealth() {
   const response = await fetch(`${API_BASE_URL}/api/health`);
 
@@ -12,23 +105,28 @@ export async function checkBackendHealth() {
 }
 
 export async function getTransactions() {
-  const response = await fetch(`${API_BASE_URL}/api/transactions`);
+  const response = await fetch(`${API_BASE_URL}/api/transactions`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
 
   if (!response.ok) {
     throw new Error(`Failed to fetch transactions: ${response.status}`);
   }
 
   const result = await response.json();
-
   return result.data;
 }
 
 export async function createTransaction(transaction) {
   const response = await fetch(`${API_BASE_URL}/api/transactions`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       ...transaction,
       amount: Number(transaction.amount),
@@ -49,7 +147,7 @@ export async function createTransaction(transaction) {
 export async function updateTransaction(id, transaction) {
   const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
       ...transaction,
       amount: Number(transaction.amount),
@@ -70,6 +168,7 @@ export async function updateTransaction(id, transaction) {
 export async function deleteTransaction(id) {
   const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
     method: "DELETE",
+    headers: getAuthHeaders(),
   });
 
   const result = await response.json();

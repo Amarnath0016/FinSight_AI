@@ -2,7 +2,15 @@ const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 const mongoose = require("mongoose");
 const connectDB = require("../config/db");
+const User = require("../models/User");
 const Transaction = require("../models/Transaction");
+
+const DEMO_USER = {
+  name: "Demo Investor",
+  email: "demo@finsight.ai",
+  password: "Password123!",
+  role: "user",
+};
 
 const sampleTransactions = [
   // Month 1
@@ -59,18 +67,46 @@ const sampleTransactions = [
 
 async function seedData() {
   try {
-    console.log("Connecting to MongoDB to seed initial transaction data...");
+    console.log("Connecting to MongoDB to seed user and transaction data...");
     await connectDB();
 
-    const existingCount = await Transaction.countDocuments();
-    console.log(`Current transactions in database: ${existingCount}`);
+    // 1. Find or create demo user
+    let user = await User.findOne({ email: DEMO_USER.email });
+    if (!user) {
+      console.log(`Creating demo user: ${DEMO_USER.email}`);
+      user = await User.create(DEMO_USER);
+      console.log(`Demo user created with ID: ${user._id}`);
+    } else {
+      console.log(`Existing demo user found with ID: ${user._id}`);
+    }
 
-    console.log("Inserting sample synthetic transactions...");
-    const result = await Transaction.insertMany(sampleTransactions);
-    console.log(`Successfully seeded ${result.length} synthetic transactions.`);
+    // 2. Assign any unassigned legacy transactions to demo user
+    const updatedLegacy = await Transaction.updateMany(
+      { userId: { $exists: false } },
+      { $set: { userId: user._id } }
+    );
+    if (updatedLegacy.modifiedCount > 0) {
+      console.log(`Updated ${updatedLegacy.modifiedCount} legacy transactions with demo userId.`);
+    }
 
-    const totalCount = await Transaction.countDocuments();
-    console.log(`Total transactions now in database: ${totalCount}`);
+    // 3. Clear existing transactions for demo user to avoid duplicate stacking
+    await Transaction.deleteMany({ userId: user._id });
+    console.log("Cleared prior demo transactions to prevent duplicate accumulation.");
+
+    // 4. Attach demo userId to all sample transactions
+    const userTransactions = sampleTransactions.map((tx) => ({
+      ...tx,
+      userId: user._id,
+    }));
+
+    const result = await Transaction.insertMany(userTransactions);
+    console.log(`Successfully seeded ${result.length} user-scoped synthetic transactions.`);
+
+    const userCount = await Transaction.countDocuments({ userId: user._id });
+    console.log(`Total transactions for ${DEMO_USER.email}: ${userCount}`);
+    console.log("\nDemo Credentials:");
+    console.log(`  Email:    ${DEMO_USER.email}`);
+    console.log(`  Password: ${DEMO_USER.password}\n`);
 
     process.exit(0);
   } catch (error) {

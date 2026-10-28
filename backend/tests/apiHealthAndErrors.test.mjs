@@ -60,7 +60,10 @@ test("errorHandler middleware falls back to 500 for generic internal errors", ()
 });
 
 test("addTransaction controller rejects invalid payload with 400 Bad Request", async () => {
-  const req = { body: { title: "", amount: -50 } };
+  const req = {
+    user: { id: "507f1f77bcf86cd799439011" },
+    body: { title: "", amount: -50 },
+  };
   const res = createMockRes();
   let caughtError = null;
 
@@ -79,6 +82,7 @@ test("addTransaction controller rejects invalid payload with 400 Bad Request", a
 
 test("updateTransaction controller rejects malformed ObjectId with 400 Bad Request", async () => {
   const req = {
+    user: { id: "507f1f77bcf86cd799439011" },
     params: { id: "not-an-object-id" },
     body: {
       title: "Valid Title",
@@ -106,6 +110,7 @@ test("updateTransaction controller rejects malformed ObjectId with 400 Bad Reque
 
 test("deleteTransaction controller rejects malformed ObjectId with 400 Bad Request", async () => {
   const req = {
+    user: { id: "507f1f77bcf86cd799439011" },
     params: { id: "12345" },
   };
   const res = createMockRes();
