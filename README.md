@@ -9,7 +9,7 @@ A full-stack personal finance platform built with the MERN stack (MongoDB, Expre
 - **Frontend:** React (v19) + Vite + Recharts + React Router + Context API Authentication
 - **Backend:** Node.js + Express + Mongoose + JWT Authentication + bcryptjs + centralized error handling
 - **Database:** MongoDB Atlas / Local MongoDB with compound indexes on `{ userId: 1, date: -1, createdAt: -1 }`
-- **Testing:** Native Node.js test runner (`node --test`), 42 automated unit & integration tests across frontend and backend.
+- **Testing:** Native Node.js test runner (`node --test`), 47 automated unit & integration tests across frontend and backend.
 
 ---
 
@@ -116,12 +116,12 @@ FinSight_AI/
 
 ## Running Automated Tests & Quality Checks
 
-### Run All Backend Tests (23 tests)
+### Run All Backend Tests (28 tests)
 ```bash
 cd backend
 npm test
 ```
-Tests authentication (registration, login, JWT validation, password hashing), user data isolation, input validation, 404 responses, and centralized error handling.
+Tests authentication (registration, login, JWT validation, password hashing), user data isolation, CSV ingestion (parsing, validation, duplicates), 404 responses, and centralized error handling.
 
 ### Run All Frontend Tests (19 tests)
 ```bash
@@ -140,11 +140,15 @@ npm run build
 
 ---
 
-## Verified Features (Weeks 1–5 + Priority A: Authentication)
+## Verified Features (Weeks 1–5 + Priority A & B: Auth & CSV Ingestion)
 
+- [x] **Two-Step CSV Ingestion Pipeline:** File upload, streaming parsing (`csv-parse`), in-memory row validation, and safe commit (`/api/upload/preview` and `/api/upload/commit`).
+- [x] **Row-Level Error & Duplicate Detection:** Flags invalid dates, missing descriptions, negative values, and in-file duplicates without corrupting the database.
+- [x] **Interactive CSV Preview UI:** Drag-and-drop dropzone, preview tables for valid and rejected records, and one-click bulk import into MongoDB.
+- [x] **Sample Data Files:** Pre-bundled [`sample-data/valid_transactions.csv`](file:///Users/amarnathyadav/Desktop/FinSight_AI/sample-data/valid_transactions.csv) and [`sample-data/mixed_transactions.csv`](file:///Users/amarnathyadav/Desktop/FinSight_AI/sample-data/mixed_transactions.csv).
 - [x] **User Authentication & Session Management:** User registration, login, and JWT stateless tokens with `bcryptjs` password hashing.
 - [x] **Strict Data Ownership & User Isolation:** All transactions are scoped to `userId` from the verified JWT. Insecure Direct Object References (IDOR) are strictly blocked on GET, POST, PUT, and DELETE.
-- [x] **Protected React Routing:** `ProtectedRoute` component guarding the dashboard, redirecting unauthenticated traffic to `/login`.
+- [x] **Protected React Routing:** `ProtectedRoute` component guarding the dashboard and upload view, redirecting unauthenticated traffic to `/login`.
 - [x] **Demo Login Shortcut:** Pre-fills test credentials (`demo@finsight.ai` / `Password123!`) for fast local evaluations.
 - [x] **Express REST API & Health Monitoring:** `/api/health` reports uptime and real-time MongoDB connection status.
 - [x] **Transaction CRUD Operations:** Create, Read, Update, Delete transactions with strict validation.

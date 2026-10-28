@@ -181,3 +181,42 @@ export async function deleteTransaction(id) {
 
   return result;
 }
+
+
+// ----------------- CSV Upload & Preview API -----------------
+
+export async function previewCsvUpload(file) {
+  const token = getStoredToken();
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/api/upload/preview`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `CSV preview failed: ${response.status}`);
+  }
+
+  return result;
+}
+
+export async function commitCsvUpload(transactions) {
+  const response = await fetch(`${API_BASE_URL}/api/upload/commit`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ transactions }),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `CSV commit failed: ${response.status}`);
+  }
+
+  return result;
+}
