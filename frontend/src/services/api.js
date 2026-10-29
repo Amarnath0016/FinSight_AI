@@ -388,3 +388,108 @@ export async function deleteSavedScenario(id) {
 
   return result;
 }
+
+// ----------------- Subscriptions & Budget Pacing API -----------------
+
+export async function getUserSubscriptions() {
+  const response = await fetch(`${API_BASE_URL}/api/analytics/subscriptions`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to fetch subscriptions: ${response.status}`);
+  }
+
+  return result;
+}
+
+export async function getBudgetPacing() {
+  const response = await fetch(`${API_BASE_URL}/api/analytics/budget-pacing`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to fetch budget pacing: ${response.status}`);
+  }
+
+  return result;
+}
+
+export async function getBudgets() {
+  const response = await fetch(`${API_BASE_URL}/api/budgets`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to fetch budgets: ${response.status}`);
+  }
+
+  return result.budgets || [];
+}
+
+export async function saveBudget(category, monthlyLimit) {
+  const response = await fetch(`${API_BASE_URL}/api/budgets`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ category, monthlyLimit }),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to save budget: ${response.status}`);
+  }
+
+  return result;
+}
+
+export async function deleteBudget(id) {
+  const response = await fetch(`${API_BASE_URL}/api/budgets/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to delete budget: ${response.status}`);
+  }
+
+  return result;
+}

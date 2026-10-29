@@ -8,6 +8,7 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 const copilotRoutes = require("./routes/copilotRoutes");
 const simulationRoutes = require("./routes/simulationRoutes");
 const scenarioRoutes = require("./routes/scenarioRoutes");
+const budgetRoutes = require("./routes/budgetRoutes");
 const notFound = require("./middleware/notFound.middleware");
 const errorHandler = require("./middleware/error.middleware");
 
@@ -41,6 +42,7 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/copilot", copilotRoutes);
 app.use("/api/simulate", simulationRoutes);
 app.use("/api/scenarios", scenarioRoutes);
+app.use("/api/budgets", budgetRoutes);
 
 // 404 handler for unmatched routes
 app.use(notFound);

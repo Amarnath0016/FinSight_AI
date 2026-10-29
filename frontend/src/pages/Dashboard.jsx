@@ -18,6 +18,11 @@ import {
   getTransactions,
   updateTransaction,
   deleteTransaction,
+  getUserSubscriptions,
+  getBudgetPacing,
+  getBudgets,
+  saveBudget,
+  deleteBudget,
 } from "../services/api";
 
 import Navbar from "../components/layout/Navbar";
@@ -25,6 +30,9 @@ import Sidebar from "../components/layout/Sidebar";
 import StatCard from "../components/dashboard/StatCard";
 import ExpenseChart from "../components/dashboard/ExpenseChart";
 import AddTransactionForm from "../components/dashboard/AddTransactionForm";
+import SubscriptionsCard from "../components/dashboard/SubscriptionsCard";
+import BudgetPacingCard from "../components/dashboard/BudgetPacingCard";
+import BudgetModal from "../components/dashboard/BudgetModal";
 
 const emptyForm = {
   title: "",
@@ -46,12 +54,20 @@ function Dashboard() {
   const [editForm, setEditForm] = useState(emptyForm);
   const [savingEdit, setSavingEdit] = useState(false);
   const [filters, setFilters] = useState({
-  search: "",
-  type: "all",
-  category: "all",
-  startDate: "",
-  endDate: "",
-});
+    search: "",
+    type: "all",
+    category: "all",
+    startDate: "",
+    endDate: "",
+  });
+
+  // Industry Features: Subscriptions & Budget Pacing State
+  const [subscriptionsData, setSubscriptionsData] = useState(null);
+  const [subscriptionsLoading, setSubscriptionsLoading] = useState(true);
+  const [budgetPacingData, setBudgetPacingData] = useState(null);
+  const [budgetPacingLoading, setBudgetPacingLoading] = useState(true);
+  const [budgetsList, setBudgetsList] = useState([]);
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
 
   const dateError =
     filters.startDate &&
@@ -81,6 +97,8 @@ function Dashboard() {
     try {
       const data = await getTransactions();
       setTransactions(Array.isArray(data) ? data : []);
+      loadSubscriptions();
+      loadBudgetPacing();
     } catch (error) {
       setTransactionsError(
         error.message || "Could not load transactions."
@@ -88,6 +106,45 @@ function Dashboard() {
     } finally {
       setTransactionsLoading(false);
     }
+  }
+
+  async function loadSubscriptions() {
+    try {
+      setSubscriptionsLoading(true);
+      const res = await getUserSubscriptions();
+      setSubscriptionsData(res);
+    } catch (err) {
+      console.warn("Failed to load subscriptions:", err.message);
+    } finally {
+      setSubscriptionsLoading(false);
+    }
+  }
+
+  async function loadBudgetPacing() {
+    try {
+      setBudgetPacingLoading(true);
+      const [pacingRes, budgetsRes] = await Promise.all([
+        getBudgetPacing().catch(() => null),
+        getBudgets().catch(() => []),
+      ]);
+      setBudgetPacingData(pacingRes);
+      setBudgetsList(budgetsRes || []);
+    } catch (err) {
+      console.warn("Failed to load budget pacing:", err.message);
+    } finally {
+      setBudgetPacingLoading(false);
+    }
+  }
+
+  async function handleSaveBudget(category, monthlyLimit) {
+    await saveBudget(category, monthlyLimit);
+    await loadBudgetPacing();
+    setIsBudgetModalOpen(false);
+  }
+
+  async function handleDeleteBudget(id) {
+    await deleteBudget(id);
+    await loadBudgetPacing();
   }
 
   function handleFilterChange(name, value) {
@@ -119,10 +176,11 @@ function Dashboard() {
   const financialHealth = calculateFinancialHealth(filteredTransactions);
 
   useEffect(() => {
-  Promise.resolve().then(() => {
-    loadTransactions();
-  });
-}, []);
+    Promise.resolve().then(() => {
+      loadTransactions();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { totalIncome, totalExpenses, netSavings, savingsRate } = summary;
 
@@ -249,7 +307,17 @@ function Dashboard() {
               </p>
             </div>
 
-            <span className="demo-badge">LIVE DATA</span>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className="secondary-btn no-print"
+                onClick={() => window.print()}
+                title="Print or save official financial report as PDF"
+              >
+                📄 Export Report (PDF)
+              </button>
+              <span className="demo-badge">LIVE DATA</span>
+            </div>
           </div>
 
           <div className="backend-status">
@@ -293,6 +361,17 @@ function Dashboard() {
           </section>
 
           <CategoryExpenseChart data={categoryBreakdown} />
+
+          <BudgetPacingCard
+            data={budgetPacingData}
+            loading={budgetPacingLoading}
+            onOpenBudgetModal={() => setIsBudgetModalOpen(true)}
+          />
+
+          <SubscriptionsCard
+            data={subscriptionsData}
+            loading={subscriptionsLoading}
+          />
 
           <AddTransactionForm onTransactionAdded={loadTransactions} />
 
@@ -475,6 +554,15 @@ function Dashboard() {
             FinSight AI · Personal Finance Intelligence Platform
             <span>Educational tracking tool — not financial advice</span>
           </footer>
+
+          <BudgetModal
+            isOpen={isBudgetModalOpen}
+            onClose={() => setIsBudgetModalOpen(false)}
+            categories={categories}
+            currentBudgets={budgetsList}
+            onSaveBudget={handleSaveBudget}
+            onDeleteBudget={handleDeleteBudget}
+          />
         </section>
       </main>
     </div>

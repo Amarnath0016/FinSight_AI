@@ -1,7 +1,9 @@
 import { useAuth } from "../../hooks/useAuth";
+import { useTheme } from "../../hooks/useTheme";
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const { toggleTheme, isDark } = useTheme();
 
   const initial = user?.name ? user.name[0].toUpperCase() : "U";
 
@@ -13,6 +15,21 @@ function Navbar() {
       </div>
 
       <div className="navbar-right" style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="theme-toggle-btn"
+          title={`Switch to ${isDark ? "Light" : "Dark"} Mode`}
+          aria-label={`Switch to ${isDark ? "Light" : "Dark"} Mode`}
+        >
+          <span className="theme-toggle-icon" aria-hidden="true">
+            {isDark ? "☀️" : "🌙"}
+          </span>
+          <span className="theme-toggle-text">
+            {isDark ? "Light Mode" : "Dark Mode"}
+          </span>
+        </button>
+
         <span className="status-dot" />
         <span style={{ fontSize: "13px", fontWeight: "500" }}>
           {user?.name || "Demo workspace"}

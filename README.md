@@ -1,16 +1,20 @@
 # FinSight AI — Personal Finance Intelligence Platform
 
-A full-stack personal finance platform built with the MERN stack (MongoDB, Express, React, Node.js), featuring explainable financial health scoring, category analytics, and automated transaction management.
+A production-grade, distributed personal finance platform built with the MERN stack (MongoDB, Express, React, Node.js) and Python FastAPI / Scikit-learn, featuring unsupervised ML spending clustering, a grounded anti-hallucination AI Copilot, predictive What-If simulation, automated subscription detection, budget burn-rate pacing, and an adaptive Dark/Light theme engine.
+
+> 📖 **Comprehensive Project Report & Technical Interview Dossier:** [`docs/FINAL_PROJECT_REPORT.md`](file:///Users/amarnathyadav/Desktop/FinSight_AI/docs/FINAL_PROJECT_REPORT.md)
 
 ---
 
-## Current Architecture & Milestones (Weeks 1–5 Verified)
+## Current Architecture & Milestones (Full Production Suite)
 
-- **Frontend:** React (v19) + Vite + Recharts + React Router + Context API Authentication
-- **Backend:** Node.js + Express + Mongoose + JWT Authentication + bcryptjs + centralized error handling
-- **Database:** MongoDB Atlas / Local MongoDB with compound indexes on `{ userId: 1, date: -1, createdAt: -1 }`
+- **Frontend:** React (v19) + Vite + Recharts + React Router + Context API Authentication + Dark/Light Mode Theme Engine + Print Report Stylesheet
+- **Backend:** Node.js + Express + Mongoose + JWT Authentication + bcryptjs + Centralized Error Handling
+- **Database:** MongoDB Atlas with compound indexes on `{ userId: 1, date: -1, createdAt: -1 }` and `{ userId: 1, category: 1 }`
 - **Machine Learning & AI:** Python (FastAPI + scikit-learn + KMeans) + Grounded AI Copilot (Context Builder + RAG Financial Knowledge Base)
-- **Testing:** 64 automated tests across Node.js (`node --test`) and Python (`pytest`).
+- **What-If Simulation:** Pure in-memory simulation engine modeling income, category reductions, loan EMIs, and goal feasibility with zero database mutation
+- **Fintech Intelligence:** Algorithmic recurring subscription/bill detection with price-creep tracking, and velocity-based category budget pacing
+- **Automated Testing:** 79 automated tests across Node.js (`node --test`), React, and Python (`pytest`), with 100% pass rate.
 
 ---
 
@@ -144,6 +148,13 @@ npm test
 ```
 Tests authentication, authorization, CSV parsing, feature engineering, offline ML fallbacks, prompt sanitization, context building, and grounded Copilot responses.
 
+### Run All Backend Tests (55 tests)
+```bash
+cd backend
+npm test
+```
+Runs comprehensive test suites covering API health, error handling, transaction schema validation, JWT auth, CSV parsing, ML fallback, What-If simulation immutability, subscription detection, and budget pacing.
+
 ### Run All Frontend Tests (19 tests)
 ```bash
 cd frontend
@@ -168,8 +179,13 @@ npm run build
 
 ---
 
-## Verified Features (Weeks 1–5 + Priority A, B, C & D: Auth, CSV, ML, AI Copilot)
+## Verified Features (Comprehensive Platform Suite)
 
+- [x] **Dark / Light Mode Adaptive Theme Engine:** Seamless navbar toggle with persistent `localStorage` memory and high-contrast, accessibility-tested palette.
+- [x] **One-Click Financial Statement Export:** Printable financial intelligence report formatted with clean `@media print` layout.
+- [x] **Algorithmic Subscription Detection & Price-Creep Alerts:** Automatically groups recurring monthly bills (e.g. Netflix, Spotify), calculates annual commitments, and flags price increases.
+- [x] **Category Budgeting & Burn Rate Velocity Pacing:** Tracks monthly progress (Day X of N), calculates daily burn rate, and projects month-end totals with proactive overspend warnings (`On Track`, `Pacing Fast`, `Over Budget`).
+- [x] **What-If Simulation & Goal Feasibility Engine:** Models hypothetical salary increments, category cuts, and new loan/EMI payments with a mathematical zero database mutation guarantee.
 - [x] **Grounded AI Copilot with Anti-Hallucination Guardrails:** Conversational assistant answering strictly using authenticated MongoDB financial facts, with prompt injection sanitization and source attribution tags.
 - [x] **RAG Personal Finance Knowledge Base:** Educational retrieval for the 50/30/20 rule, emergency fund sizing, savings benchmarks, and debt ratios.
 - [x] **Conversational History Persistence:** User-isolated conversation history stored in MongoDB (`Conversation` schema) with clean-up controls.
@@ -184,11 +200,11 @@ npm run build
 - [x] **Sample Data Files:** Pre-bundled [`sample-data/valid_transactions.csv`](file:///Users/amarnathyadav/Desktop/FinSight_AI/sample-data/valid_transactions.csv) and [`sample-data/mixed_transactions.csv`](file:///Users/amarnathyadav/Desktop/FinSight_AI/sample-data/mixed_transactions.csv).
 - [x] **User Authentication & Session Management:** User registration, login, and JWT stateless tokens with `bcryptjs` password hashing.
 - [x] **Strict Data Ownership & User Isolation:** All transactions are scoped to `userId` from the verified JWT. Insecure Direct Object References (IDOR) are strictly blocked on GET, POST, PUT, and DELETE.
-- [x] **Protected React Routing:** `ProtectedRoute` component guarding the dashboard, clusters, copilot, and upload views.
+- [x] **Protected React Routing:** `ProtectedRoute` component guarding the dashboard, what-if, clusters, copilot, and upload views.
 - [x] **Demo Login Shortcut:** Pre-fills test credentials (`demo@finsight.ai` / `Password123!`) for fast local evaluations.
 - [x] **Express REST API & Health Monitoring:** `/api/health` reports uptime and real-time MongoDB connection status.
 - [x] **Transaction CRUD Operations:** Create, Read, Update, Delete transactions with strict validation.
-- [x] **Database Indexing:** Compound index on `{ userId: 1, date: -1, createdAt: -1 }` for optimal query speed.
+- [x] **Database Indexing:** Compound indexes on `{ userId: 1, date: -1, createdAt: -1 }` and `{ userId: 1, category: 1 }` for optimal query speed.
 - [x] **Centralized Error Handling:** Standardized JSON error envelopes and custom `ApiError`.
 - [x] **Financial Analytics Engine:** Real-time net savings, savings rate, and category breakdowns.
 - [x] **Search & Multi-criteria Filtering:** Title search, income/expense toggle, category dropdown, and inclusive date boundary filtering.

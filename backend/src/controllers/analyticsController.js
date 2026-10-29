@@ -4,6 +4,8 @@ const {
   computeUserSpendingFeatures,
   requestMlSegmentation,
 } = require("../services/ml.service");
+const { getUserSubscriptions } = require("../services/subscription.service");
+const { getUserBudgetPacing } = require("../services/budget.service");
 
 // GET /api/analytics/segmentation
 const getUserSegmentation = asyncHandler(async (req, res) => {
@@ -28,6 +30,26 @@ const getUserSegmentation = asyncHandler(async (req, res) => {
   });
 });
 
+// GET /api/analytics/subscriptions
+const getSubscriptions = asyncHandler(async (req, res) => {
+  const result = await getUserSubscriptions(req.user.id);
+  res.status(200).json({
+    success: true,
+    ...result,
+  });
+});
+
+// GET /api/analytics/budget-pacing
+const getBudgetPacing = asyncHandler(async (req, res) => {
+  const result = await getUserBudgetPacing(req.user.id);
+  res.status(200).json({
+    success: true,
+    ...result,
+  });
+});
+
 module.exports = {
   getUserSegmentation,
+  getSubscriptions,
+  getBudgetPacing,
 };
