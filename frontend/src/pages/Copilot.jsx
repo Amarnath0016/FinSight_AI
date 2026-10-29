@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
 import {
@@ -12,6 +12,7 @@ const SUGGESTED_QUESTIONS = [
   "What is my financial health score and how can I improve it?",
   "Where did my money go? Show top spending categories.",
   "What is my savings rate and cash flow surplus?",
+  "What if I simulate cutting my expenses by 20%?",
   "Explain the 50/30/20 budgeting rule.",
   "Do I have any mutual fund or stock investments recorded?",
 ];
@@ -69,6 +70,8 @@ function Copilot() {
   const [historyLoading, setHistoryLoading] = useState(true);
   const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
+  const location = useLocation();
+  const initialPromptProcessed = useRef(false);
 
   useEffect(() => {
     async function loadHistory() {
@@ -104,7 +107,7 @@ function Copilot() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  async function handleSend(promptText) {
+  const handleSend = useCallback(async (promptText) => {
     const textToSend = (promptText || input).trim();
     if (!textToSend || loading) return;
 
@@ -131,7 +134,14 @@ function Copilot() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [input, loading]);
+
+  useEffect(() => {
+    if (location.state?.initialPrompt && !initialPromptProcessed.current && !historyLoading) {
+      initialPromptProcessed.current = true;
+      handleSend(location.state.initialPrompt);
+    }
+  }, [location.state, historyLoading, handleSend]);
 
   async function handleClearHistory() {
     if (!window.confirm("Are you sure you want to clear your Copilot chat history?")) return;

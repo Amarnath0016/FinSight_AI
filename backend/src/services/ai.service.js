@@ -47,7 +47,33 @@ function generateGroundedAnswer(question, context) {
     };
   }
 
-  // 2. Spending Breakdown & Top Categories Inquiry
+  // 2. What-If Simulation & Scenario Analysis Inquiry
+  if (
+    q.includes("what if") ||
+    q.includes("simulate") ||
+    q.includes("simulation") ||
+    q.includes("scenario") ||
+    q.includes("afford") ||
+    q.includes("i simulated")
+  ) {
+    const topCat = topCategories[0] || { category: "Discretionary Spending", amount: Math.round(summary.totalExpenses * 0.3) };
+    const simulatedCut = Math.round(topCat.amount * 0.2);
+    const newSavings = summary.netSavings + simulatedCut;
+    const newSavingsRate = summary.totalIncome > 0 ? Number(((newSavings / summary.totalIncome) * 100).toFixed(1)) : 0;
+
+    return {
+      content:
+        `### FinSight Scenario Intelligence\n\n` +
+        `Simulating changes on your baseline data (**${formatINR(summary.totalIncome)}** income, **${formatINR(summary.totalExpenses)}** expenses):\n\n` +
+        `• **Current Savings:** ${formatINR(summary.netSavings)} (${summary.savingsRate}% savings rate)\n` +
+        `• **Target Opportunity:** Reducing **${topCat.category}** by 20% would free up approximately **${formatINR(simulatedCut)}/month**.\n` +
+        `• **Projected Outcome:** Net savings would increase to **${formatINR(newSavings)}** (raising your savings rate to **${newSavingsRate}%**).\n\n` +
+        `💡 *To test custom income adjustments, multiple category percentage sliders, EMI affordability, and savings goals in real-time, visit the **What-If Simulation** page from the sidebar.*`,
+      source: "simulation_engine",
+    };
+  }
+
+  // 3. Spending Breakdown & Top Categories Inquiry
   if (
     q.includes("spend") ||
     q.includes("category") ||
@@ -94,7 +120,7 @@ function generateGroundedAnswer(question, context) {
     };
   }
 
-  // 4. Financial Concepts / General Education (RAG retrieval)
+  // 5. Financial Concepts / General Education (RAG retrieval)
   const educationalMatches = retrieveRelevantKnowledge(question);
   if (educationalMatches.length > 0) {
     const matched = educationalMatches[0];

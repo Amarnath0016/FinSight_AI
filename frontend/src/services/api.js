@@ -301,3 +301,90 @@ export async function clearCopilotHistory() {
 
   return result;
 }
+
+// ----------------- What-If Simulation API -----------------
+
+export async function runSimulation(adjustments) {
+  const response = await fetch(`${API_BASE_URL}/api/simulate`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(adjustments || {}),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Simulation failed with status ${response.status}`);
+  }
+
+  return result;
+}
+
+export async function getSavedScenarios() {
+  const response = await fetch(`${API_BASE_URL}/api/scenarios`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to fetch scenarios: ${response.status}`);
+  }
+
+  return result.scenarios || [];
+}
+
+export async function saveScenario(scenarioData) {
+  const response = await fetch(`${API_BASE_URL}/api/scenarios`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(scenarioData),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to save scenario: ${response.status}`);
+  }
+
+  return result;
+}
+
+export async function deleteSavedScenario(id) {
+  const response = await fetch(`${API_BASE_URL}/api/scenarios/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Failed to delete scenario: ${response.status}`);
+  }
+
+  return result;
+}

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
+import WhatIf from "./pages/WhatIf";
 import Copilot from "./pages/Copilot";
 import Upload from "./pages/Upload";
 import ClusterInsights from "./pages/ClusterInsights";
@@ -20,6 +21,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/what-if"
+            element={
+              <ProtectedRoute>
+                <WhatIf />
               </ProtectedRoute>
             }
           />

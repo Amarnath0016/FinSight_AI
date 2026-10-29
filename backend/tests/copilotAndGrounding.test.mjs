@@ -103,3 +103,11 @@ test("generateGroundedAnswer prompts user when transaction dataset is empty", ()
   assert.equal(answer.source, "system");
   assert.match(answer.content, /don't have any transactions recorded/i);
 });
+
+test("generateGroundedAnswer generates what-if scenario intelligence for hypothetical questions", () => {
+  const answer = generateGroundedAnswer("What if I simulate cutting my expenses by 20%?", mockContext);
+  assert.equal(answer.source, "simulation_engine");
+  assert.match(answer.content, /FinSight Scenario Intelligence/i);
+  assert.match(answer.content, /Housing/);
+  assert.match(answer.content, /What-If Simulation/i);
+});

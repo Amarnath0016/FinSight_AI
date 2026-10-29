@@ -83,6 +83,13 @@ flowchart TD
     P10 --> AI[AI Provider]
     AI --> P11[11. Return Explanation]
 
+    U --> P12[12. What-If Simulation]
+    P12 --> P13[13. Pure In-Memory Recomputation]
+    P13 <--> DB
+    P13 --> P14[14. Delta Analysis & Prescriptions]
+    P14 --> U
+    P14 -.->|Optional Save| DB
+
     P6 --> U
     P11 --> U
     ERR --> U
@@ -95,12 +102,23 @@ erDiagram
     USER ||--o{ TRANSACTION : owns
     USER ||--o{ UPLOAD : submits
     USER ||--o{ ANALYTIC_RESULT : receives
+    USER ||--o{ SCENARIO : saves
 
     USER {
         string id PK
         string name
         string email UK
         string passwordHash
+        datetime createdAt
+    }
+
+    SCENARIO {
+        string id PK
+        string userId FK
+        string name
+        string description
+        json adjustments
+        json simulatedOutcome
         datetime createdAt
     }
 

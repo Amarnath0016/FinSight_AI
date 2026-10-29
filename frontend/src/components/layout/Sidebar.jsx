@@ -5,6 +5,7 @@ function Sidebar() {
 
   const navItems = [
     { path: "/", icon: "▦", label: "Dashboard" },
+    { path: "/what-if", icon: "∿", label: "What-If Simulator" },
     { path: "/copilot", icon: "✧", label: "AI Copilot" },
     { path: "/clusters", icon: "✦", label: "Cluster Insights" },
     { path: "/upload", icon: "⇪", label: "CSV Upload" },
