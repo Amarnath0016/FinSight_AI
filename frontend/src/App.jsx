@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
+import Copilot from "./pages/Copilot";
 import Upload from "./pages/Upload";
 import ClusterInsights from "./pages/ClusterInsights";
 import Login from "./pages/Login";
@@ -19,6 +20,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/copilot"
+            element={
+              <ProtectedRoute>
+                <Copilot />
               </ProtectedRoute>
             }
           />

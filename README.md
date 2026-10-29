@@ -9,8 +9,8 @@ A full-stack personal finance platform built with the MERN stack (MongoDB, Expre
 - **Frontend:** React (v19) + Vite + Recharts + React Router + Context API Authentication
 - **Backend:** Node.js + Express + Mongoose + JWT Authentication + bcryptjs + centralized error handling
 - **Database:** MongoDB Atlas / Local MongoDB with compound indexes on `{ userId: 1, date: -1, createdAt: -1 }`
-- **Machine Learning:** Python (FastAPI + scikit-learn + Pydantic + StandardScaler + KMeans k=3)
-- **Testing:** 56 automated tests across Node.js (`node --test`) and Python (`pytest`).
+- **Machine Learning & AI:** Python (FastAPI + scikit-learn + KMeans) + Grounded AI Copilot (Context Builder + RAG Financial Knowledge Base)
+- **Testing:** 64 automated tests across Node.js (`node --test`) and Python (`pytest`).
 
 ---
 
@@ -137,12 +137,12 @@ FinSight_AI/
 
 ## Running Automated Tests & Quality Checks
 
-### Run All Backend Tests (32 tests)
+### Run All Backend Tests (40 tests)
 ```bash
 cd backend
 npm test
 ```
-Tests authentication, authorization, CSV parsing, feature engineering, and resilient ML fallbacks.
+Tests authentication, authorization, CSV parsing, feature engineering, offline ML fallbacks, prompt sanitization, context building, and grounded Copilot responses.
 
 ### Run All Frontend Tests (19 tests)
 ```bash
@@ -168,8 +168,12 @@ npm run build
 
 ---
 
-## Verified Features (Weeks 1–5 + Priority A, B & C: Auth, CSV, ML Service)
+## Verified Features (Weeks 1–5 + Priority A, B, C & D: Auth, CSV, ML, AI Copilot)
 
+- [x] **Grounded AI Copilot with Anti-Hallucination Guardrails:** Conversational assistant answering strictly using authenticated MongoDB financial facts, with prompt injection sanitization and source attribution tags.
+- [x] **RAG Personal Finance Knowledge Base:** Educational retrieval for the 50/30/20 rule, emergency fund sizing, savings benchmarks, and debt ratios.
+- [x] **Conversational History Persistence:** User-isolated conversation history stored in MongoDB (`Conversation` schema) with clean-up controls.
+- [x] **Interactive Copilot Chat UI:** Dedicated chat view featuring suggested prompt chips, markdown formatting, typing indicators, and data-source badges (`Based on your data` vs `Financial Education`).
 - [x] **Python ML Microservice (FastAPI + scikit-learn):** Standalone ML service with `/health` and `/segmentation/predict` endpoints.
 - [x] **Unsupervised K-Means Behavioral Clustering (k=3):** Normalizes spending vectors using `StandardScaler` to classify users into *Disciplined Saver*, *Balanced Spender*, or *High-Outflow Spender*.
 - [x] **Resilient Node-to-Python Gateway:** Express backend calls the ML service with automatic timeouts (3.5s) and graceful heuristic fallback so dashboard never crashes if the Python service is offline.
@@ -180,7 +184,7 @@ npm run build
 - [x] **Sample Data Files:** Pre-bundled [`sample-data/valid_transactions.csv`](file:///Users/amarnathyadav/Desktop/FinSight_AI/sample-data/valid_transactions.csv) and [`sample-data/mixed_transactions.csv`](file:///Users/amarnathyadav/Desktop/FinSight_AI/sample-data/mixed_transactions.csv).
 - [x] **User Authentication & Session Management:** User registration, login, and JWT stateless tokens with `bcryptjs` password hashing.
 - [x] **Strict Data Ownership & User Isolation:** All transactions are scoped to `userId` from the verified JWT. Insecure Direct Object References (IDOR) are strictly blocked on GET, POST, PUT, and DELETE.
-- [x] **Protected React Routing:** `ProtectedRoute` component guarding the dashboard, clusters, and upload views.
+- [x] **Protected React Routing:** `ProtectedRoute` component guarding the dashboard, clusters, copilot, and upload views.
 - [x] **Demo Login Shortcut:** Pre-fills test credentials (`demo@finsight.ai` / `Password123!`) for fast local evaluations.
 - [x] **Express REST API & Health Monitoring:** `/api/health` reports uptime and real-time MongoDB connection status.
 - [x] **Transaction CRUD Operations:** Create, Read, Update, Delete transactions with strict validation.

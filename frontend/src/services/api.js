@@ -241,3 +241,63 @@ export async function getUserSegmentation() {
 
   return response.json();
 }
+
+
+// ----------------- AI Copilot API -----------------
+
+export async function sendCopilotMessage(message) {
+  const response = await fetch(`${API_BASE_URL}/api/copilot/chat`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ message }),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || `Copilot request failed: ${response.status}`);
+  }
+
+  return result;
+}
+
+export async function getCopilotHistory() {
+  const response = await fetch(`${API_BASE_URL}/api/copilot/history`, {
+    headers: getAuthHeaders(),
+  });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    window.location.href = "/login";
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`Failed to load chat history: ${response.status}`);
+  }
+
+  return result.messages || [];
+}
+
+export async function clearCopilotHistory() {
+  const response = await fetch(`${API_BASE_URL}/api/copilot/history`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(`Failed to clear chat history: ${response.status}`);
+  }
+
+  return result;
+}

@@ -5,6 +5,7 @@ function Sidebar() {
 
   const navItems = [
     { path: "/", icon: "▦", label: "Dashboard" },
+    { path: "/copilot", icon: "✧", label: "AI Copilot" },
     { path: "/clusters", icon: "✦", label: "Cluster Insights" },
     { path: "/upload", icon: "⇪", label: "CSV Upload" },
   ];
@@ -44,7 +45,7 @@ function Sidebar() {
         <div className="privacy-icon">✓</div>
         <strong>Privacy first</strong>
         <p>Your financial data remains strictly user-isolated.</p>
-        <span className="version">FINSIGHT AI · ML SERVICE</span>
+        <span className="version">FINSIGHT AI · AI COPILOT</span>
       </div>
     </aside>
   );
